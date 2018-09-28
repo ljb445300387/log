@@ -4,6 +4,11 @@ netstat -anpt | grep redis | awk -F" " {'print $5'} | awk -F":" {'print $1'}| so
 
 kill -9 $(netstat -anp | grep 8080 | awk -F" " {'print $7'} | cut -d / -f1)
 
+   location ~ .*\.(?:htm|html)$
+    {
+        add_header Cache-Control "private, no-store, no-cache, must-revalidate, proxy-revalidate";
+    }
+
 spring-boot如何配置监听两个不同的RabbitMQ
 详细步骤：
 1. application.properties 文件配置：
