@@ -1,0 +1,87 @@
+1.Centos7 关闭防火墙
+	CentOS 7.0默认使用的是firewall作为防火墙，使用iptables必须重新设置一下
+	1、直接关闭防火墙
+		systemctl stop firewalld.service #停止firewall
+		systemctl disable firewalld.service #禁止firewall开机启动
+	2、设置 iptables service
+		yum -y install iptables-services
+	如果要修改防火墙配置，如增加防火墙端口3306
+		vi /etc/sysconfig/iptables 
+	增加规则
+		-A INPUT -m state --state NEW -m tcp -p tcp --dport 3306 -j ACCEPT
+	保存退出后
+		systemctl restart iptables.service #重启防火墙使配置生效
+		systemctl enable iptables.service #设置防火墙开机启动
+	最后重启系统使设置生效即可
+
+2 安装Compose(pip安装)（https://blog.csdn.net/u011781521/article/details/80464826）
+	2.1、安装python-pip
+		yum -y install epel-release
+		yum -y install python-pip
+	2.2、安装docker-compose
+		pip install docker-compose
+
+3 安装graylog （https://www.jianshu.com/p/25e310596559）
+	3.1 初始化目录和配置文件
+		#创建数据目录
+		mkdir -p ./graylog/data
+		#创建配置文件目录
+		mkdir -p ./graylog/config
+		cd ./graylog/config
+		#直接下载官方推荐配置文件
+		wget https://raw.githubusercontent.com/Graylog2/graylog2-images/2.1/docker/config/graylog.conf
+		#日志配置文件
+		wget https://raw.githubusercontent.com/Graylog2/graylog2-images/2.1/docker/config/log4j2.xml
+	3.2 修改下载完的graylog.conf中的root_timezone为：
+		root_timezone = +08:00
+	3.3 新建docker-compose.yml来供docker-compose快速启动完整服务，文件内容如下：	
+		version: '2'
+		services:
+		  some-mongo:
+			image: "mongo:3"
+			volumes:
+			  - /graylog/data/mongo:/data/db
+		  some-elasticsearch:
+			image: "elasticsearch:2"
+			command: "elasticsearch -Des.cluster.name='graylog'"
+			volumes:
+			  - /graylog/data/elasticsearch:/usr/share/elasticsearch/data
+		  graylog:
+			image: graylog2/server:2.1.1-1
+			volumes:
+			  - ./graylog/data/journal:/usr/share/graylog/data/journal
+			  - ./graylog/config:/usr/share/graylog/data/config
+			environment:
+			  GRAYLOG_PASSWORD_SECRET: somepasswordpepper
+			  GRAYLOG_ROOT_PASSWORD_SHA2: 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+			  GRAYLOG_WEB_ENDPOINT_URI: http://127.0.0.1:9000/api
+			links:
+			  - some-mongo:mongo
+			  - some-elasticsearch:elasticsearch
+			ports:
+			  - "9000:9000"
+			  - "12201:12201/udp"
+			  - "1514:1514/udp"
+	3.4 启动
+		docker-compose -f graylog.yml up -d		  
+4 Centos7下安装netstat
+	yum install net-tools
+	
+5 linux centos7 安装、卸载docker（https://blog.csdn.net/t594362122/article/details/78642886）
+	5.1:安装docker（yum方式）
+		yum install docker 
+	5.2：修改docker工作根目录vim /etc/sysconfig/docker找到OPTIONS选项，增加-g的参数，指定工作根目录OPTIONS='--selinux-enabled --log-driver=journald --signature-verification=false -g=/opt/data/docker'参数： -g="/opt/data/docker"是将Docker的默认根路径从/var/lib/docker改成/opt/data/docker,所有的Docker images
+		都会放到这个目录下
+	5.3：启动 Docker 服务：$service docker start 
+		docker 卸载
+			1：查看已安装的docker安装包
+				$yum list installed|grep docker 
+				docker.x86_64                        2:1.12.6-61.git85d7426.el7.centos @extras  
+				docker-client.x86_64                 2:1.12.6-61.git85d7426.el7.centos @extras  
+				docker-common.x86_64                 2:1.12.6-61.git85d7426.el7.centos @extras 
+			2:删除安装包 
+				yum –y remove docker.x86_64 
+				yum –y remove docker-client.x86_64
+				yum –y remove docker-common.x86_64
+	5.4:删除docker 镜像
+	rm -rf /var/lib/docker
