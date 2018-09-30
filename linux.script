@@ -22,6 +22,13 @@
 		pip install docker-compose
 
 3 安装graylog （https://www.jianshu.com/p/25e310596559）
+	3.0 关闭 selinux 
+			#查看SELinux状态（如果SELinux status参数为enabled即为开启状态）
+				/usr/sbin/sestatus -v 
+			#临时关闭
+				setenforce 0
+			#修改配置文件重启机器禁用（将SELINUX=enforcing改为SELINUX=disabled）
+				vim /etc/selinux/config
 	3.1 初始化目录和配置文件
 		#创建数据目录
 		mkdir -p ./graylog/data
