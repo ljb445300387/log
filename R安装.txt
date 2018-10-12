@@ -1,0 +1,97 @@
+1、安装epel yum源
+	1)安装
+		rpm -ivh http://mirror.utexas.edu/epel/6/x86_64/epel-release-6-8.noarch.rpm
+	2)查看
+		rpm -qa|grep epel
+	3)导入KEY
+		rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6
+2、yum 安装R
+	yum install R
+3、查找R的安装路径，发现R安装在/usr/lib64/R下
+	rpm -qal |grep "/R/" |less
+
+	将R的bin目录添加到环境变量
+	vim /etc/profile
+	export R_HOME=/usr/lib64/R
+	export PATH=$R_HOME/bin:$PATH
+	source /etc/profile
+4、在linux terminal中输入R，回车，进入R环境
+5、链接R与jupyterhub
+	conda install -c r r-essentials	
+6、查看jupyter支持的语言内核
+	jupyter kernelspec list
+7、安装相关包
+	进入R环境
+	install.packages(c('crayon', 'pbdZMQ', 'devtools'))
+	devtools::install_github(paste0('IRkernel/', c('repr', 'IRdisplay', 'IRkernel')))
+
+8、启用R的kernel
+	IRkernel::installspec(user = FALSE)
+9、安装“你我贷”需要的R依赖包
+	install.packages(c('caret'))
+	install.packages(c('car'))
+	install.packages(c('smbinning'))
+	install.packages(c('dplyr'))
+	install.packages(c('plyr','foreach','doParallel','ROCR'))
+	install.packages(c('rlist','ggplot2','readr','rpart'))
+	install.packages(c('data.table','scorecard','woe','discretization','mlr'))
+10、测试包是否按照成功
+	library(caret)
+	library(car)
+	library(smbinning)
+	library(plyr)
+	library(dplyr)
+
+	library(foreach)
+	library(doParallel)
+	library(ROCR)
+	library(rlist)
+	library(ggplot2)
+	library(readr)
+	library(rpart)
+
+	library(data.table)
+	library(scorecard)
+	library(woe)
+	library(discretization)
+	library(mlr)
+
+特别注意：
+	remove.packages(c("curl","httr"))
+
+	install.packages(c("curl", "httr"))
+	
+	
+	[root@localhost src]# strings /usr/lib64/libstdc++.so.6 | grep GLIBCXX
+		GLIBCXX_3.4
+		GLIBCXX_3.4.1
+		GLIBCXX_3.4.2
+		GLIBCXX_3.4.3
+		GLIBCXX_3.4.4
+		GLIBCXX_3.4.5
+		GLIBCXX_3.4.6
+		GLIBCXX_3.4.7
+		GLIBCXX_3.4.8
+		GLIBCXX_3.4.9
+		GLIBCXX_3.4.10
+		GLIBCXX_3.4.11
+		GLIBCXX_3.4.12
+		GLIBCXX_3.4.13
+		GLIBCXX_3.4.14
+		GLIBCXX_3.4.15
+		GLIBCXX_3.4.16
+		GLIBCXX_3.4.17
+		GLIBCXX_3.4.18
+		GLIBCXX_3.4.19
+		GLIBCXX_DEBUG_MESSAGE_LENGTH发现少了GLIBCXX_3.4.20，解决方法是升级libstdc++.
+	[root@localhost ~]# yum provides libstdc++.so.6
+		Loaded plugins: fastestmirror, langpacks
+		Loading mirror speeds from cached hostfile
+		?* base: centos.ustc.edu.cn
+		?* extras: centos.ustc.edu.cn
+		?* updates: centos.ustc.edu.cn
+		libstdc++-4.8.5-11.el7.i686 : GNU Standard C++ Library
+		Repo ? ? ? ?: base
+		Matched from:
+		Provides ? ?: libstdc++.so.6
+	[root@localhost ~]# yum install libstdc++-4.8.5-11.el7.i686
