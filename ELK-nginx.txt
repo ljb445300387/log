@@ -1,0 +1,59 @@
+1 安装nginx 
+wget http://nginx.org/download/nginx-1.14.0.tar.gz
+cd nginx
+./configure --prefix=/usr/local/nginx --with-stream
+
+	配置失败，缺少依赖包，通过yum添加
+	yum install pcre-devel
+	yum install zlib-devel
+	
+编译nginx
+make
+make instal
+
+stream {
+    upstream logstash {
+        hash $remote_addr consistent;
+        server A:4560;
+        server B:4560;
+    }
+    server {
+        listen       5560;
+        proxy_pass   logstash;
+        proxy_protocol on;
+    }
+}
+
+2 安装logstash
+wget https://artifacts.elastic.co/downloads/logstash/logstash-5.2.2.tar.gz
+tar zxvf logstash-5.2.2.tar.gz
+
+配置文件
+input {
+    #开启远程输入日志服务
+    tcp {
+        port => "4560"
+        mode => "server"
+        type => "log4j2"
+        proxy_protocol => true #开启后只能通过nginx代理连接，不能直接连接
+    }
+}
+
+filter {
+    #使用json格式日志，将日志转成json对象
+        json {
+        source => "message"
+        }
+    #将远程客户端的日志设置为插入时间，不设置默认为当前系统时间，可能会存在时间误差
+    date {
+        match => ["time", "yyyy-MM-dd HH:mm:ss.SSS"]
+        remove_field => ["time"]
+    }
+}
+
+output {
+    elasticsearch {
+        hosts => ["192.16.19.101:9200"]
+        index  => "log4j2-%{+YYYY.MM.dd}"
+    }
+}
