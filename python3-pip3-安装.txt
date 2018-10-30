@@ -1,0 +1,35 @@
+1.安装python3
+
+	先安装依赖包
+	yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel
+    
+	然后去官网下载 python3.6.3
+	wget https://www.python.org/ftp/python/3.6.3/Python-3.6.3.tgz
+	
+	新建安装文件夹
+	mkdir -p /usr/local/python3
+    
+	解压安装包
+	tar -zxvf Python-3.6.3.tgz
+    
+	进入安装目录安装python
+	cd Python-3.6.3
+
+	./configure --prefix=/usr/local/python3
+   
+	make install    或者 make && make install
+
+2.建立软链接
+
+
+	##此时在该目录下直接执行 pip3 不会有反应，因为 linux 默认去 /usr/bin / 下找 pip3，而 / usr/bin / 下没有该命令。
+
+	##因此可以在 / usr/bin 新建 pip3 的链接到 python3 安装目录下到 pip3.6，命令如下：
+
+	ln -s  /usr/local/python3/bin/pip3.5  /usr/bin/pip3
+
+	然后到 / usr/bin 下就可以看到新建的 pip3
+ 	/usr/local/python3/bin/pip3.6是python3.6安装路径，/usr/bin/pip3是要链接的文件
+
+
+输入pip3 -V 如果能显示pip版本，则安装成功
