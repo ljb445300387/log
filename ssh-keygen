@@ -1,0 +1,4 @@
+在 node1 上
+  ssh-keygen -t rsa 按四下回车 （生成秘钥文件和私钥文件 id_rsa id_rsa_pub）
+讲公钥拷贝给node-2
+  ssh-copy-id node-2 (首次连接需要输入用户密码、验证成功后后续免密登录)
