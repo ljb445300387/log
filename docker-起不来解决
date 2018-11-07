@@ -1,0 +1,2 @@
+vi /etc/sysconfig/docker
+OPTIONS='--selinux-enabled-->OPTIONS='--selinux-enabled=false
