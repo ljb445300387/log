@@ -1,0 +1,50 @@
+http://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/
+
+http://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/
+
+
+ "registry-mirrors": ["https://registry.docker-cn.com"]
+}
+
+kubeadm init --kubernetes-version=v1.11.2 --pod-network-cidr=10.244.0.0/16 --service-cidr=10.96.0.0/12
+
+
+kubeadm init --kubernetes-version=v1.12.2 --pod-network-cidr=10.244.0.0/16 --service-cidr=10.96.0.0/12  --ignore-preflight-errors=Swap
+
+
+docker pull registry.cn-beijing.aliyuncs.com/zhoujun/pause-amd64:3.1
+docker pull registry.cn-beijing.aliyuncs.com/zhoujun/kube-proxy-amd64:v1.11.3
+docker pull registry.cn-beijing.aliyuncs.com/zhoujun/kube-scheduler-amd64:v1.11.3
+docker pull registry.cn-beijing.aliyuncs.com/zhoujun/coredns:1.1.3
+docker pull registry.cn-beijing.aliyuncs.com/zhoujun/pause:3.1
+docker pull registry.cn-beijing.aliyuncs.com/zhoujun/kube-controller-manager-amd64:v1.11.3
+docker pull registry.cn-beijing.aliyuncs.com/zhoujun/kube-apiserver-amd64:v1.11.3
+docker pull registry.cn-beijing.aliyuncs.com/zhoujun/etcd-amd64:3.2.18
+然后修改版本：
+
+docker tag registry.cn-beijing.aliyuncs.com/zhoujun/kube-proxy-amd64:v1.11.3 k8s.gcr.io/kube-proxy-amd64:v1.11.3
+docker tag registry.cn-beijing.aliyuncs.com/zhoujun/kube-scheduler-amd64:v1.11.3 k8s.gcr.io/kube-scheduler-amd64:v1.11.3
+docker tag registry.cn-beijing.aliyuncs.com/zhoujun/kube-apiserver-amd64:v1.11.3 k8s.gcr.io/kube-apiserver-amd64:v1.11.3
+docker tag registry.cn-beijing.aliyuncs.com/zhoujun/kube-controller-manager-amd64:v1.11.3 k8s.gcr.io/kube-controller-manager-amd64:v1.11.3
+docker tag registry.cn-beijing.aliyuncs.com/zhoujun/etcd-amd64:3.2.18  k8s.gcr.io/etcd-amd64:3.2.18
+docker tag registry.cn-beijing.aliyuncs.com/zhoujun/pause:3.1  k8s.gcr.io/pause:3.1
+docker tag registry.cn-beijing.aliyuncs.com/zhoujun/coredns:1.1.3  k8s.gcr.io/coredns:1.1.3
+docker tag registry.cn-beijing.aliyuncs.com/zhoujun/pause-amd64:3.1  k8s.gcr.io/pause-amd64:3.1
+
+
+docker pull registry.cn-beijing.aliyuncs.com/zhoujun/kube-apiserver:v1.12.2
+
+[ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-apiserver:v1.12.2: 
+[ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-controller-manager:v1.12.2: 
+[ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-scheduler:v1.12.2:
+[ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-proxy:v1.12.2: 
+[ERROR ImagePull]: failed to pull image k8s.gcr.io/pause:3.1: 
+[ERROR ImagePull]: failed to pull image k8s.gcr.io/etcd:3.2.24: 
+[ERROR ImagePull]: failed to pull image k8s.gcr.io/coredns:1.2.2: 
+
+[ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-apiserver:v1.12.2: output: Error response from daemon: Get https://k8s.gcr.io/v2/: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+[ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-controller-manager:v1.12.2: output: Error response from daemon: Get https://k8s.gcr.io/v2/: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+[ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-scheduler:v1.12.2: output: Error response from daemon: Get https://k8s.gcr.io/v2/: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+[ERROR ImagePull]: failed to pull image k8s.gcr.io/kube-proxy:v1.12.2: output: Error response from daemon: Get https://k8s.gcr.io/v2/: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+[ERROR ImagePull]: failed to pull image k8s.gcr.io/etcd:3.2.24: output: Error response from daemon: Get https://k8s.gcr.io/v2/: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+[ERROR ImagePull]: failed to pull image k8s.gcr.io/coredns:1.2.2: output: Error response from daemon: Get https://k8s.gcr.io/v2/: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
