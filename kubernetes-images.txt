@@ -8,9 +8,7 @@ http://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/
 
 kubeadm init --kubernetes-version=v1.11.2 --pod-network-cidr=10.244.0.0/16 --service-cidr=10.96.0.0/12
 
-
 kubeadm init --kubernetes-version=v1.12.2 --pod-network-cidr=10.244.0.0/16 --service-cidr=10.96.0.0/12  --ignore-preflight-errors=Swap
-
 
 docker pull registry.cn-beijing.aliyuncs.com/zhoujun/pause-amd64:3.1
 docker pull registry.cn-beijing.aliyuncs.com/zhoujun/kube-proxy-amd64:v1.11.3
@@ -20,7 +18,6 @@ docker pull registry.cn-beijing.aliyuncs.com/zhoujun/pause:3.1
 docker pull registry.cn-beijing.aliyuncs.com/zhoujun/kube-controller-manager-amd64:v1.11.3
 docker pull registry.cn-beijing.aliyuncs.com/zhoujun/kube-apiserver-amd64:v1.11.3
 docker pull registry.cn-beijing.aliyuncs.com/zhoujun/etcd-amd64:3.2.18
-然后修改版本：
 
 docker tag registry.cn-beijing.aliyuncs.com/zhoujun/kube-proxy-amd64:v1.11.3 k8s.gcr.io/kube-proxy-amd64:v1.11.3
 docker tag registry.cn-beijing.aliyuncs.com/zhoujun/kube-scheduler-amd64:v1.11.3 k8s.gcr.io/kube-scheduler-amd64:v1.11.3
@@ -56,3 +53,5 @@ for imageName in ${images[@]} ; do
   docker tag mirrorgooglecontainers/$imageName k8s.gcr.io/$imageName
   docker rmi mirrorgooglecontainers/$imageName
 done
+
+docker pull fengzos/coredns:1.2.2
