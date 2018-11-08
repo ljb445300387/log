@@ -53,6 +53,6 @@ images=(
 )
 for imageName in ${images[@]} ; do
   docker pull mirrorgooglecontainers/$imageName
-  docker tag mirrorgooglecontainers/$imageName gcr.io/google_containers/$imageName
+  docker tag mirrorgooglecontainers/$imageName k8s.gcr.io/$imageName
   docker rmi mirrorgooglecontainers/$imageName
 done
