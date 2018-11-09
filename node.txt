@@ -1,4 +1,4 @@
-docker pull mirrorgooglecontainers/pause:3.1:
+docker pull mirrorgooglecontainers/pause:3.1
 docker tag mirrorgooglecontainers/pause:3.1  k8s.gcr.io/pause:3.1
 
 
