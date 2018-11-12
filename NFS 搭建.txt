@@ -1,0 +1,25 @@
+0、建立一个文件夹，比如
+	mkdir -p /opt/weblogic
+	chmod 777 /tmp/nfs-test1 /tmp/nfs-test2　　//给予最高权限
+1、在/etc/exports中加入一个nfs的mount点
+	vi /etc/exports
+	/opt/weblogic  *(insecure,rw,async,no_root_squash)
+2、	使配置文件生效
+	exportfs -arv
+3、
+	service rpcbind start
+	service nfs restart
+
+4、编辑/etc/sysconfig/nfs(该文件用以固定NFS服务端口)
+	vi /etc/sysconfig/nfs
+	
+5、查看nfs开启的rpc端口
+
+6、本机测试（配置防火墙，对外开放NFS服务）
+	showmount -e localhost
+	
+外部节点
+1、显示NFS服务器的共享目录.
+	showmount -e 192.168.1.22
+2、挂载/tmp/nfs-test1和/tmp/nfs-test2
+	mount -t nfs 192.168.1.22:/opt/weblogic /opt/weblogic
