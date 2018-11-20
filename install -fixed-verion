@@ -4,3 +4,6 @@
 
 
 yum erase xxxx
+
+
+yum list | grep iptables
