@@ -1,0 +1,51 @@
+ kubeadm join 192.168.1.22:6443 --token 618qty.2b1r3fmgd8lwr9f3 --discovery-token-ca-cert-hash sha256:142ff13605e111051784ef70f0bd2be14848b57da56630188da3c590f95fc9c8
+ 
+ hostnamectl set-hostname master
+ 
+ 
+ kubernetes-dashboard-amd64:v1.10.0
+ docker pull mirrorgooglecontainers/kubernetes-helm/tiller:v2.11.0
+ docker pull ibmcom/tiller:v2.11.0
+ docker pull jessestuart/tiller:v2.11.0
+ 
+ docker pull lachlanevenson/k8s-helm
+ 
+ docker tag lachlanevenson/k8s-helm:v2.11.0  k8s.gcr.io/kubernetes-helm/tiller:v2.11.0
+                                                 gcr.io/kubernetes-helm/tiller:v2.11.0
+ docker tag registry.cn-hangzhou.aliyuncs.com/linkcloud/k8s-helm:v2.7.2  k8s.gcr.io/kubernetes-helm/tiller:v2.11.0
+ docker tag registry.cn-beijing.aliyuncs.com/my-img/tiller:v2.7.2  k8s.gcr.io/tiller:v2.7.2
+ docker tag registry.cn-beijing.aliyuncs.com/my-img/tiller:v2.7.2  k8s.gcr.io/tiller:v2.7.2
+ docker tag mirrorgooglecontainers/kubernetes-dashboard-amd64:v1.10.0  k8s.gcr.io/kubernetes-dashboard-amd64:v1.10.0
+ docker tag fengzos/kubernetes-dashboard-amd64:v1.10.0  k8s.gcr.io/kubernetes-dashboard-amd64:v1.10.0
+k8s.gcr.io/kubernetes-dashboard-amd64:v1.10.0
+
+docker tag mirrorgooglecontainers/pause:3.0 gcr.io/google_containers/pause:3.0
+docker tag hub.tencentyun.com/helm/tiller:v2.11.0 gcr.io/kubernetes-helm/tiller:v2.11.0
+
+eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJuYW1lc3BhY2UtY29udHJvbGxlci10b2tlbi1xZ2RreiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJuYW1lc3BhY2UtY29udHJvbGxlciIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImE3Njc0MTdjLWUzZTMtMTFlOC1iYTBlLTAwMGMyOWI0OTUyZSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlLXN5c3RlbTpuYW1lc3BhY2UtY29udHJvbGxlciJ9.dFTTbTVqOIEFpDwWFI4Kqq1xS-VGmzY9-_WE6LgaOxflfWzmYyFVfIaJPcaGpbHs5ud6gIN4vmbhLm3ogHS1tifzc3A7xin2rEU2fulg-WaQNF_8QhZWfl7vVJkaFBUhIEOdU0XIp2GjMou4AC6x8DQ7xDXV5BeGi-vOh897AXkQAMpuEojjeyh13XqbCcLLUhO1z8XJ9Pbs5VVMAIUdFerz9JOV5iUFVSJQ3lGNO1xyjdPpr0sATEy1saKDBILn-Pby6xTKL_W7R1UNg2jV7AlCtF_qnHYvibNq24uSM-buvZE1kfNBt-8i4SyXCY_A6GkZN3lPFJ-NgSy_OIm2KQ
+
+kubectl config set-context $(kubectl config current-context) --namespace ${NAMESPACE:-jhub}
+
+
+docker pull registry.cn-beijing.aliyuncs.com/my-img/tiller:v2.7.2
+helm init –service-accounttiller –tiller-image tiller:2.7.2 –skip-refresh
+[root@node01 ~]# helm init --upgrade -i k8s.gcr.io/tiller:v2.7.2 --stable-repo-url https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts
+
+kubectl --namespace kube-system create serviceaccount tiller
+
+kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+
+helm init --service-account tiller
+helm init --upgrade -i k8s.gcr.io/tiller:v2.7.2 --stable-repo-url https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts
+
+kubectl patch deployment tiller-deploy --namespace=kube-system --type=json --patch='[{"op": "add", "path": "/spec/template/spec/containers/0/command", "value": ["/tiller", "--listen=localhost:44134"]}]'
+
+# Suggested values: advanced users of Kubernetes and Helm should feel
+# free to use different values.
+RELEASE=jhub
+NAMESPACE=jhub
+
+helm upgrade --install $RELEASE jupyterhub/jupyterhub \
+  --namespace $NAMESPACE  \
+  --version 0.7.0 \
+  --values config.yaml
