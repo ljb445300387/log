@@ -1,0 +1,58 @@
+	使用Docker部署Gitlab
+1. 下载gitlab镜像
+	docker pull gitlab/gitlab-ce
+2. 运行gitlab实例
+	GITLAB_HOME=`pwd`/data/gitlab
+	docker run -d \
+		--hostname gitlab \
+		--publish 8443:443 --publish 80:80 --publish 2222:22 \
+		--name gitlab \
+		--restart always \
+		--volume $GITLAB_HOME/config:/etc/gitlab \
+		--volume $GITLAB_HOME/logs:/var/log/gitlab \
+		--volume $GITLAB_HOME/data:/var/opt/gitlab \
+		gitlab/gitlab-ce
+3. 配置gitlab实例
+3.1 配置邮箱:
+	docker exec -t -i gitlab vim /etc/gitlab/gitlab.rb
+	下面以网易163邮箱为例配置邮箱:
+
+	gitlab_rails['smtp_enable'] = true
+	gitlab_rails['smtp_address'] = "smtp.163.com"
+	gitlab_rails['smtp_port'] = 25
+	gitlab_rails['smtp_user_name'] = "xxxx@163.com"
+	gitlab_rails['smtp_password'] = "xxxxpassword"
+	gitlab_rails['smtp_domain'] = "163.com"
+	gitlab_rails['smtp_authentication'] = "login"
+	gitlab_rails['smtp_enable_starttls_auto'] = false
+	gitlab_rails['smtp_openssl_verify_mode'] = "peer"
+
+	gitlab_rails['gitlab_email_from'] = "xxxx@163.com"
+	user["git_user_email"] = "xxxx@163.com"
+	注意以上的xxxx@163.com代表用户名，即邮箱地址，而xxxxpassword不是邮箱的登陆密码而是网易邮箱的客户端授权密码,
+	再网易邮箱web页面的设置-POP3/SMTP/IMAP-客户端授权密码查看。
+
+3.2 配置外部访问URL
+	这个必须配置，否则默认以容器的主机名作为URL，刚开始由于做了端口映射80->8080, 因此设置为
+
+	external_url "http://10.103.240.36:8080"
+	后来发现external_url只能配置ip或者域名，不能有端口，否则不能启动。
+	于是只能把端口设置为80->80，然后external_url设置为:
+
+	external_url "http://10.103.240.36"
+4. 重启gitlab
+	docker restart gitlab
+5. 配置oauth
+	我们要修改的配置文件为gitlab.rb，对于发布版或docker镜像的Gitlab ，该配置文件位于 /etc/gitlab/gitlab.rb。
+
+	### OmniAuth Settings
+	###! Docs: https://docs.gitlab.com/ce/integration/omniauth.html
+
+	gitlab_rails['omniauth_enabled'] = true
+	gitlab_rails['omniauth_allow_single_sign_on'] = ['oauth2_generic']
+	gitlab_rails['omniauth_block_auto_created_users'] = false
+
+	首先需要将 omniauth_enabled 设置为启用。如果开启allow_single_sign_on，对于没有注册账户的用户将会在gitlab中自动创建账户。
+	如果开启block_auto_created_users，则自动注册的账户是被锁定的，需要管理员账户手动的为这些账户解锁，因此此处将其设置为false。
+
+	接下来需要配置具体的oauth认证断点以及信息，结构可以在omniauth-oauth2-generic README中找到，但配置过程会比较痛苦，先来看看配置好是什么样子。
