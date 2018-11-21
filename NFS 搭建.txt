@@ -1,3 +1,5 @@
+-1、yum -y install nfs-utils rpcbind
+
 0、建立一个文件夹，比如
 	mkdir -p /opt/weblogic
 	chmod 777 /tmp/nfs-test1 /tmp/nfs-test2　　//给予最高权限
