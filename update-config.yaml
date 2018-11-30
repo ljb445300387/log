@@ -1,3 +1,5 @@
+kubectl edit cm coredns -oyaml -nkube-system
+
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
 curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
